@@ -1,0 +1,98 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>Generate Setlist</h2>
+  </div>
+  <div class="col-auto">
+    <a routerLink="/songs" class="btn btn-outline-secondary">Back to Song Library</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Setlist Parameters
+  </div>
+  <div class="card-body">
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="generatorForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- Setlist Name -->
+          <div class="mb-3">
+            <label for="name" class="form-label">Setlist Name *</label>
+            <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter setlist name">
+            <div *ngIf="generatorForm.get('name')?.invalid && generatorForm.get('name')?.touched" class="text-danger">
+              Setlist name is required
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" formControlName="date">
+          </div>
+
+          <!-- Venue -->
+          <div class="mb-3">
+            <label for="venue" class="form-label">Venue</label>
+            <input type="text" class="form-control" id="venue" formControlName="venue" placeholder="Enter venue name">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <!-- Target Duration -->
+          <div class="mb-3">
+            <label for="target_duration" class="form-label">Target Duration *</label>
+            <div class="row g-2">
+              <div class="col-6">
+                <div class="input-group">
+                  <input type="number" class="form-control" id="hours" 
+                         [value]="extractDurationComponents(generatorForm.get('target_duration')?.value || 3600).hours"
+                         (change)="updateDuration($any($event.target).value, extractDurationComponents(generatorForm.get('target_duration')?.value || 3600).minutes)"
+                         min="0" max="5" placeholder="Hours">
+                  <span class="input-group-text">hours</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="input-group">
+                  <input type="number" class="form-control" id="minutes" 
+                         [value]="extractDurationComponents(generatorForm.get('target_duration')?.value || 3600).minutes"
+                         (change)="updateDuration(extractDurationComponents(generatorForm.get('target_duration')?.value || 3600).hours, $any($event.target).value)"
+                         min="0" max="59" placeholder="Minutes">
+                  <span class="input-group-text">minutes</span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="generatorForm.get('target_duration')?.invalid && generatorForm.get('target_duration')?.touched" class="text-danger">
+              Duration must be at least 10 minutes
+            </div>
+            <small class="form-text text-muted">Set the target duration for your setlist. The generator will select songs to match this duration.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-3">
+        <h5 class="alert-heading">How the Setlist Generator Works</h5>
+        <p>The setlist generator will create a balanced setlist based on your song library, following these rules:</p>
+        <ul>
+          <li>All "hit" songs will be included automatically</li>
+          <li>Major/Minor keys will be evenly distributed</li>
+          <li>Tempo categories (slow, medium, fast) will be evenly distributed</li>
+          <li>Original/Cover songs will be evenly distributed</li>
+          <li>Lead vocalist duties will be evenly distributed</li>
+          <li>The total duration will match your target as closely as possible</li>
+        </ul>
+      </div>
+
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+        <a routerLink="/songs" class="btn btn-secondary me-md-2">Cancel</a>
+        <button type="submit" class="btn btn-primary" [disabled]="generating">
+          <span *ngIf="generating" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Generate Setlist
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

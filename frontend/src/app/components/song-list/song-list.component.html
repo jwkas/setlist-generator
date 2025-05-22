@@ -1,0 +1,71 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>Song Library</h2>
+  </div>
+  <div class="col-auto">
+    <div class="btn-group">
+      <a routerLink="/songs/add" class="btn btn-primary">Add New Song</a>
+      <a routerLink="/songs/upload" class="btn btn-secondary">Upload CSV</a>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="error" class="alert alert-danger">
+  {{ error }}
+</div>
+
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && songs.length === 0" class="alert alert-info">
+  No songs found. Add songs to your library to get started.
+</div>
+
+<div *ngIf="!loading && songs.length > 0" class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Key</th>
+        <th>Tempo</th>
+        <th>Vocalist</th>
+        <th>Type</th>
+        <th>Duration</th>
+        <th>Hit</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let song of songs">
+        <td>{{ song.title }}</td>
+        <td>{{ song.artist }}</td>
+        <td>
+          {{ song.key }}
+          <span [class]="getKeyTypeClass(song)" class="ms-1">{{ getKeyTypeLabel(song) }}</span>
+        </td>
+        <td>
+          {{ song.tempo }} BPM
+          <span *ngIf="song.tempo_category" [class]="getTempoClass(song.tempo_category)" class="ms-1">{{ song.tempo_category }}</span>
+        </td>
+        <td>{{ song.lead_vocalist || 'N/A' }}</td>
+        <td>
+          <span [class]="getOriginalClass(song)">{{ getOriginalLabel(song) }}</span>
+        </td>
+        <td>{{ formatDuration(song.duration) }}</td>
+        <td>
+          <span *ngIf="song.is_hit" [class]="getHitClass(song)">Hit</span>
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm">
+            <a [routerLink]="['/songs/edit', song.id]" class="btn btn-outline-primary">Edit</a>
+            <button (click)="deleteSong(song.id!)" class="btn btn-outline-danger">Delete</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

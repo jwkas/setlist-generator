@@ -1,0 +1,130 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>Upload Songs</h2>
+  </div>
+  <div class="col-auto">
+    <a routerLink="/songs" class="btn btn-outline-secondary">Back to Song List</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Bulk Upload Songs via CSV
+  </div>
+  <div class="card-body">
+    <p class="card-text">
+      Upload a CSV file containing your songs. The CSV file should have the following columns:
+    </p>
+    
+    <div class="table-responsive mb-4">
+      <table class="table table-sm table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>Column</th>
+            <th>Description</th>
+            <th>Required</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>title</td>
+            <td>Song title</td>
+            <td>Yes</td>
+            <td>Stairway to Heaven</td>
+          </tr>
+          <tr>
+            <td>artist</td>
+            <td>Artist name</td>
+            <td>Yes</td>
+            <td>Led Zeppelin</td>
+          </tr>
+          <tr>
+            <td>tempo</td>
+            <td>Tempo in BPM</td>
+            <td>No</td>
+            <td>75</td>
+          </tr>
+          <tr>
+            <td>tempo_category</td>
+            <td>Tempo category (slow, medium, fast)</td>
+            <td>No</td>
+            <td>slow</td>
+          </tr>
+          <tr>
+            <td>intensity</td>
+            <td>Intensity level (low, medium, high)</td>
+            <td>No</td>
+            <td>medium</td>
+          </tr>
+          <tr>
+            <td>lead_vocalist</td>
+            <td>Lead vocalist name</td>
+            <td>No</td>
+            <td>Robert Plant</td>
+          </tr>
+          <tr>
+            <td>key</td>
+            <td>Musical key</td>
+            <td>No</td>
+            <td>A Minor</td>
+          </tr>
+          <tr>
+            <td>is_minor</td>
+            <td>Is minor key (true/false)</td>
+            <td>No</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td>is_original</td>
+            <td>Is original song (true/false)</td>
+            <td>No</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td>is_hit</td>
+            <td>Is a hit song (true/false)</td>
+            <td>No</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td>duration</td>
+            <td>Duration in seconds</td>
+            <td>No</td>
+            <td>480</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-outline-primary" (click)="downloadSampleCsv()">
+        <i class="bi bi-download"></i> Download Sample CSV
+      </button>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+
+    <div *ngIf="success" class="alert alert-success">
+      {{ success }}
+    </div>
+
+    <div class="mb-3">
+      <label for="csvFile" class="form-label">Select CSV File</label>
+      <input class="form-control" type="file" id="csvFile" (change)="onFileSelected($event)" accept=".csv">
+      <div class="form-text">Only CSV files are supported.</div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+      <button type="button" class="btn btn-primary" [disabled]="!selectedFile || uploading" (click)="uploadFile()">
+        <span *ngIf="uploading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        Upload Songs
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="navigateToSongList()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

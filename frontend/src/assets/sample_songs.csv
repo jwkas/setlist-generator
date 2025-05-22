@@ -1,0 +1,11 @@
+title,artist,tempo,tempo_category,intensity,lead_vocalist,key,is_minor,is_original,is_hit,duration
+Stairway to Heaven,Led Zeppelin,75,slow,medium,Robert Plant,A Minor,true,false,true,480
+Sweet Child O' Mine,Guns N' Roses,120,medium,high,Axl Rose,D Major,false,false,false,355
+Creep,Radiohead,92,medium,medium,Thom Yorke,G Major,false,false,true,239
+Smells Like Teen Spirit,Nirvana,116,medium,high,Kurt Cobain,F Minor,true,false,false,301
+Hotel California,Eagles,75,slow,medium,Don Henley,B Minor,true,false,true,390
+Bohemian Rhapsody,Queen,72,slow,medium,Freddie Mercury,Eb Major,false,false,true,354
+Wonderwall,Oasis,87,medium,medium,Liam Gallagher,F# Minor,true,false,false,258
+Back in Black,AC/DC,96,medium,high,Brian Johnson,E Major,false,false,false,255
+Imagine,John Lennon,75,slow,low,John Lennon,C Major,false,false,true,183
+Nothing Else Matters,Metallica,69,slow,medium,James Hetfield,E Minor,true,false,false,386

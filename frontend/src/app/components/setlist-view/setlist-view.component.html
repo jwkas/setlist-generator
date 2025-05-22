@@ -1,0 +1,122 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2 *ngIf="setlist">{{ setlist.name }}</h2>
+    <h2 *ngIf="!setlist">Setlist Details</h2>
+  </div>
+  <div class="col-auto">
+    <div class="btn-group">
+      <a routerLink="/generate" class="btn btn-outline-primary">Generate New Setlist</a>
+      <a routerLink="/songs" class="btn btn-outline-secondary">Back to Song Library</a>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="error" class="alert alert-danger">
+  {{ error }}
+</div>
+
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && setlist" class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-0">Setlist Details</h5>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sm btn-outline-primary" (click)="printSetlist()">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteSetlist()">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <p class="mb-1"><strong>Name:</strong> {{ setlist.name }}</p>
+        <p class="mb-1"><strong>Date:</strong> {{ setlist.date | date:'mediumDate' }}</p>
+        <p class="mb-1"><strong>Venue:</strong> {{ setlist.venue || 'N/A' }}</p>
+      </div>
+      <div class="col-md-4">
+        <p class="mb-1"><strong>Total Duration:</strong> {{ formatTotalDuration(setlist.total_duration) }}</p>
+        <p class="mb-1"><strong>Number of Songs:</strong> {{ setlist.songs?.length || 0 }}</p>
+      </div>
+    </div>
+
+    <h5 class="card-title">Songs</h5>
+    
+    <div *ngIf="!setlist.songs || setlist.songs.length === 0" class="alert alert-info">
+      No songs in this setlist.
+    </div>
+
+    <div *ngIf="setlist.songs && setlist.songs.length > 0" class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Key</th>
+            <th>Tempo</th>
+            <th>Vocalist</th>
+            <th>Type</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let song of setlist.songs; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>
+              {{ song.title }}
+              <span *ngIf="song.is_hit" class="badge bg-danger ms-1">Hit</span>
+            </td>
+            <td>{{ song.artist }}</td>
+            <td>
+              {{ song.key }}
+              <span [class]="getKeyTypeClass(song.is_minor)" class="ms-1">{{ getKeyTypeLabel(song.is_minor) }}</span>
+            </td>
+            <td>
+              {{ song.tempo }} BPM
+              <span *ngIf="song.tempo_category" [class]="getTempoClass(song.tempo_category)" class="ms-1">{{ song.tempo_category }}</span>
+            </td>
+            <td>{{ song.lead_vocalist || 'N/A' }}</td>
+            <td>
+              <span [class]="getOriginalClass(song.is_original)">{{ getOriginalLabel(song.is_original) }}</span>
+            </td>
+            <td>{{ formatDuration(song.duration) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Print-only styles -->
+<style type="text/css" media="print">
+  .btn-group, .navbar, .no-print {
+    display: none !important;
+  }
+  
+  .card {
+    border: none !important;
+  }
+  
+  .card-header {
+    background-color: white !important;
+    border-bottom: 1px solid #000 !important;
+  }
+  
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  @page {
+    margin: 0.5cm;
+  }
+</style>

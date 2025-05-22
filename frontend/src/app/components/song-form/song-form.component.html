@@ -1,0 +1,154 @@
+<div class="row mb-4">
+  <div class="col">
+    <h2>{{ isEditMode ? 'Edit' : 'Add' }} Song</h2>
+  </div>
+  <div class="col-auto">
+    <a routerLink="/songs" class="btn btn-outline-secondary">Back to Song List</a>
+  </div>
+</div>
+
+<div *ngIf="error" class="alert alert-danger">
+  {{ error }}
+</div>
+
+<div *ngIf="loading" class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<form [formGroup]="songForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+  <div class="row">
+    <!-- Basic Song Information -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">Basic Information</div>
+        <div class="card-body">
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title *</label>
+            <input type="text" class="form-control" id="title" formControlName="title" placeholder="Enter song title">
+            <div *ngIf="songForm.get('title')?.invalid && songForm.get('title')?.touched" class="text-danger">
+              Title is required
+            </div>
+          </div>
+
+          <!-- Artist -->
+          <div class="mb-3">
+            <label for="artist" class="form-label">Artist *</label>
+            <input type="text" class="form-control" id="artist" formControlName="artist" placeholder="Enter artist name">
+            <div *ngIf="songForm.get('artist')?.invalid && songForm.get('artist')?.touched" class="text-danger">
+              Artist is required
+            </div>
+          </div>
+
+          <!-- Lead Vocalist -->
+          <div class="mb-3">
+            <label for="lead_vocalist" class="form-label">Lead Vocalist</label>
+            <input type="text" class="form-control" id="lead_vocalist" formControlName="lead_vocalist" placeholder="Enter lead vocalist name">
+          </div>
+
+          <!-- Duration -->
+          <div class="mb-3">
+            <label for="duration" class="form-label">Duration (seconds)</label>
+            <input type="number" class="form-control" id="duration" formControlName="duration" placeholder="Enter duration in seconds">
+            <div *ngIf="songForm.get('duration')?.invalid && songForm.get('duration')?.touched" class="text-danger">
+              Duration must be a positive number
+            </div>
+            <small class="form-text text-muted">Enter the song duration in seconds (e.g., 180 for 3:00)</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Musical Properties -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">Musical Properties</div>
+        <div class="card-body">
+          <!-- Tempo -->
+          <div class="mb-3">
+            <label for="tempo" class="form-label">Tempo (BPM)</label>
+            <input type="number" class="form-control" id="tempo" formControlName="tempo" placeholder="Enter tempo in BPM">
+            <div *ngIf="songForm.get('tempo')?.invalid && songForm.get('tempo')?.touched" class="text-danger">
+              Tempo must be a positive number
+            </div>
+          </div>
+
+          <!-- Tempo Category -->
+          <div class="mb-3">
+            <label for="tempo_category" class="form-label">Tempo Category</label>
+            <select class="form-select" id="tempo_category" formControlName="tempo_category">
+              <option value="">Select tempo category</option>
+              <option *ngFor="let category of tempoCategories" [value]="category">
+                {{ category | titlecase }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Intensity -->
+          <div class="mb-3">
+            <label for="intensity" class="form-label">Intensity</label>
+            <select class="form-select" id="intensity" formControlName="intensity">
+              <option value="">Select intensity level</option>
+              <option *ngFor="let level of intensityLevels" [value]="level">
+                {{ level | titlecase }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Key -->
+          <div class="mb-3">
+            <label for="key" class="form-label">Key</label>
+            <input type="text" class="form-control" id="key" formControlName="key" placeholder="e.g., A Minor, C Major">
+          </div>
+
+          <!-- Is Minor -->
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="is_minor" formControlName="is_minor">
+            <label class="form-check-label" for="is_minor">
+              Minor Key
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Properties -->
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header">Additional Properties</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="is_original" formControlName="is_original">
+                <label class="form-check-label" for="is_original">
+                  Original Song
+                </label>
+                <small class="form-text text-muted d-block">Uncheck if this is a cover song</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="is_hit" formControlName="is_hit">
+                <label class="form-check-label" for="is_hit">
+                  Hit Song
+                </label>
+                <small class="form-text text-muted d-block">Check if this song should be included in every setlist</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+    <a routerLink="/songs" class="btn btn-secondary me-md-2">Cancel</a>
+    <button type="submit" class="btn btn-primary" [disabled]="submitting">
+      <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+      {{ isEditMode ? 'Update' : 'Save' }} Song
+    </button>
+  </div>
+</form>
