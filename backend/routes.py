@@ -187,8 +187,10 @@ def generate_setlist():
     hit_songs_duration = sum(song.duration or 0 for song in hit_songs)
     remaining_duration = target_duration - hit_songs_duration
     
-    # Filter out hit songs from the pool of available songs
+    # Filter out hit songs from the pool of available songs and shuffle to break
+    # any inherent ordering from the database
     available_songs = [song for song in all_songs if not song.is_hit]
+    random.shuffle(available_songs)
     
     # Group songs by their attributes for balanced distribution
     songs_by_key_type = {'major': [], 'minor': []}
@@ -430,13 +432,30 @@ def generate_setlist():
                         count(second, lambda s: normalize_tempo_category(s.tempo_category) == 'fast')) <= 1)
         return all(checks)
 
-    def shuffle_setlist_order(songs, attempts=50):
+    def shuffle_setlist_order(songs, attempts=1000):
         """Randomize order while keeping sequencing rules and half balance."""
         songs = songs.copy()
+        # Try a number of full shuffles first
         for _ in range(attempts):
             random.shuffle(songs)
             if sequence_valid(songs) and halves_balanced(songs):
                 return songs
+
+        # If no perfect shuffle found, build the order greedily while checking
+        # the rules. This fallback helps avoid returning an invalid sequence.
+        remaining = songs.copy()
+        random.shuffle(remaining)
+        ordered = []
+        while remaining:
+            candidates = [s for s in remaining if sequence_valid(ordered + [s])]
+            if not candidates:
+                break
+            next_song = random.choice(candidates)
+            ordered.append(next_song)
+            remaining.remove(next_song)
+
+        if ordered and sequence_valid(ordered) and halves_balanced(ordered):
+            return ordered
         return songs
 
     # Randomize final order while respecting sequencing rules
