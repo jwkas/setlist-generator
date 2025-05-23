@@ -16,6 +16,8 @@ A web application for musicians and band managers to generate optimized setlists
   - Evenly distribute lead vocalist duties
   - Respect total setlist duration
   - Always include "hit" songs
+  - Never have more than two original songs in a row
+  - Never have two slow songs in a row
 
 ## Technology Stack
 
