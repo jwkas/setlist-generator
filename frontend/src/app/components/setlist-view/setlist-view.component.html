@@ -81,8 +81,7 @@
               <span [class]="getKeyTypeClass(song.is_minor)" class="ms-1">{{ getKeyTypeLabel(song.is_minor) }}</span>
             </td>
             <td>
-              {{ song.tempo }} BPM
-              <span *ngIf="song.tempo_category" [class]="getTempoClass(song.tempo_category)" class="ms-1">{{ song.tempo_category }}</span>
+              <span *ngIf="song.tempo_category" [class]="getTempoClass(song.tempo_category)">{{ song.tempo_category }}</span>
             </td>
             <td>{{ song.lead_vocalist || 'N/A' }}</td>
             <td>
