@@ -238,6 +238,26 @@ def generate_setlist():
     def get_next_song(current_setlist, remaining_songs):
         if not remaining_songs:
             return None
+
+        # Filter out songs that would violate sequencing rules:
+        # 1) No more than two originals in a row
+        # 2) No two slow songs in a row
+        def violates_rules(candidate):
+            if len(current_setlist) >= 2:
+                if (current_setlist[-1].is_original and
+                        current_setlist[-2].is_original and
+                        candidate.is_original):
+                    return True
+            if len(current_setlist) >= 1:
+                last_tempo = normalize_tempo_category(current_setlist[-1].tempo_category)
+                cand_tempo = normalize_tempo_category(candidate.tempo_category)
+                if last_tempo == 'slow' and cand_tempo == 'slow':
+                    return True
+            return False
+
+        valid_songs = [s for s in remaining_songs if not violates_rules(s)]
+        if not valid_songs:
+            valid_songs = remaining_songs
             
         # Count current distribution
         key_counts = {'major': 0, 'minor': 0}
@@ -278,7 +298,7 @@ def generate_setlist():
         
         # Score each remaining song based on how well it balances the setlist
         scored_songs = []
-        for song in remaining_songs:
+        for song in valid_songs:
             score = 0
             
             # Score for key type
