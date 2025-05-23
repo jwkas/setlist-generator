@@ -243,11 +243,28 @@ def generate_setlist():
         # Filter out songs that would violate sequencing rules:
         # 1) No more than two originals in a row
         # 2) No two slow songs in a row
+        # 3) No more than two minor songs in a row
+        # 4) No more than two fast songs in a row
+        # 5) No more than two songs from the same vocalist in a row
         def violates_rules(candidate):
             if len(current_setlist) >= 2:
                 if (current_setlist[-1].is_original and
                         current_setlist[-2].is_original and
                         candidate.is_original):
+                    return True
+                if (current_setlist[-1].is_minor and
+                        current_setlist[-2].is_minor and
+                        candidate.is_minor):
+                    return True
+                last_fast = normalize_tempo_category(current_setlist[-1].tempo_category) == 'fast'
+                prev_fast = normalize_tempo_category(current_setlist[-2].tempo_category) == 'fast'
+                cand_fast = normalize_tempo_category(candidate.tempo_category) == 'fast'
+                if last_fast and prev_fast and cand_fast:
+                    return True
+                last_vocal = current_setlist[-1].lead_vocalist
+                prev_vocal = current_setlist[-2].lead_vocalist
+                cand_vocal = candidate.lead_vocalist
+                if last_vocal and prev_vocal and cand_vocal and last_vocal == prev_vocal == cand_vocal:
                     return True
             if len(current_setlist) >= 1:
                 last_tempo = normalize_tempo_category(current_setlist[-1].tempo_category)
@@ -351,26 +368,74 @@ def generate_setlist():
     def sequence_valid(songs):
         """Check sequencing rules for a list of songs."""
         originals_in_row = 0
+        minors_in_row = 0
+        fast_in_row = 0
         last_tempo = None
+        last_vocals = []
         for s in songs:
+            # Original rule
             if s.is_original:
                 originals_in_row += 1
             else:
                 originals_in_row = 0
             if originals_in_row > 2:
                 return False
+
+            # Minor rule
+            if s.is_minor:
+                minors_in_row += 1
+            else:
+                minors_in_row = 0
+            if minors_in_row > 2:
+                return False
+
+            # Tempo rules
             tempo = normalize_tempo_category(s.tempo_category) if s.tempo_category else None
+            if tempo == 'fast':
+                fast_in_row += 1
+            else:
+                fast_in_row = 0
+            if fast_in_row > 2:
+                return False
             if last_tempo == 'slow' and tempo == 'slow':
                 return False
             last_tempo = tempo
+
+            # Vocalist rule
+            last_vocals.append(s.lead_vocalist)
+            if len(last_vocals) > 3:
+                last_vocals = last_vocals[-3:]
+            if len(last_vocals) == 3 and last_vocals[0] and last_vocals[0] == last_vocals[1] == last_vocals[2]:
+                return False
+
         return True
 
+    def halves_balanced(songs):
+        """Ensure the second half roughly matches the first half for key, tempo and type."""
+        if not songs:
+            return True
+        mid = len(songs) // 2
+        first = songs[:mid]
+        second = songs[mid:]
+
+        def count(lst, func):
+            return sum(1 for s in lst if func(s))
+
+        checks = []
+        checks.append(abs(count(first, lambda s: s.is_original) - count(second, lambda s: s.is_original)) <= 1)
+        checks.append(abs(count(first, lambda s: s.is_minor) - count(second, lambda s: s.is_minor)) <= 1)
+        checks.append(abs(count(first, lambda s: normalize_tempo_category(s.tempo_category) == 'slow') -
+                        count(second, lambda s: normalize_tempo_category(s.tempo_category) == 'slow')) <= 1)
+        checks.append(abs(count(first, lambda s: normalize_tempo_category(s.tempo_category) == 'fast') -
+                        count(second, lambda s: normalize_tempo_category(s.tempo_category) == 'fast')) <= 1)
+        return all(checks)
+
     def shuffle_setlist_order(songs, attempts=50):
-        """Randomize order while keeping sequencing rules."""
+        """Randomize order while keeping sequencing rules and half balance."""
         songs = songs.copy()
         for _ in range(attempts):
             random.shuffle(songs)
-            if sequence_valid(songs):
+            if sequence_valid(songs) and halves_balanced(songs):
                 return songs
         return songs
 
