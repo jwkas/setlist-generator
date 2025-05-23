@@ -9,15 +9,17 @@ A web application for musicians and band managers to generate optimized setlists
   - Track song parameters like tempo, key, intensity, and vocalist
   - Mark favorite songs as "hits" to include in every setlist
 
-- Generate balanced setlists that:
-  - Evenly distribute major/minor keys
-  - Evenly distribute tempos (slow, medium, fast)
-  - Evenly distribute cover/original songs
-  - Evenly distribute lead vocalist duties
+- Generate setlists that follow these rules:
+  - Never have more than two minor songs in a row
+  - Never have more than two fast songs in a row
+  - Never have more than two songs from the same vocalist in a row
   - Respect total setlist duration
   - Always include "hit" songs
   - Never have more than two original songs in a row
   - Never have two slow songs in a row
+  - The second half of the set should have roughly the same number of original songs as the first half
+  - The second half of the set should have roughly the same number of minor key songs as the first half
+  - The second half of the set should have roughly the same number of slow and fast songs as the first half
 
 ## Technology Stack
 
