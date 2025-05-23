@@ -347,7 +347,36 @@ def generate_setlist():
         else:
             # If song is too long, remove it from consideration
             available_songs.remove(next_song)
-    
+
+    def sequence_valid(songs):
+        """Check sequencing rules for a list of songs."""
+        originals_in_row = 0
+        last_tempo = None
+        for s in songs:
+            if s.is_original:
+                originals_in_row += 1
+            else:
+                originals_in_row = 0
+            if originals_in_row > 2:
+                return False
+            tempo = normalize_tempo_category(s.tempo_category) if s.tempo_category else None
+            if last_tempo == 'slow' and tempo == 'slow':
+                return False
+            last_tempo = tempo
+        return True
+
+    def shuffle_setlist_order(songs, attempts=50):
+        """Randomize order while keeping sequencing rules."""
+        songs = songs.copy()
+        for _ in range(attempts):
+            random.shuffle(songs)
+            if sequence_valid(songs):
+                return songs
+        return songs
+
+    # Randomize final order while respecting sequencing rules
+    setlist_songs = shuffle_setlist_order(setlist_songs)
+
     # Create the setlist in the database
     new_setlist = Setlist(
         name=name,
