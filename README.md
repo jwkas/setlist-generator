@@ -50,7 +50,7 @@ setlist-generator/
    - Windows: `venv\Scripts\activate`
    - macOS/Linux: `source venv/bin/activate`
 4. Install dependencies: `pip install -r requirements.txt`
-5. Run the Flask application: `python app.py`
+5. Run the Flask application: `python run.py`
 
 ### Frontend Setup
 

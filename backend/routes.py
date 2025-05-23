@@ -184,6 +184,8 @@ def generate_setlist():
     
     # Calculate remaining duration after including hit songs
     hit_songs_duration = sum(song.duration or 0 for song in hit_songs)
+    if hit_songs_duration > target_duration:
+        return jsonify({'error': 'Hit songs exceed target duration'}), 400
     remaining_duration = target_duration - hit_songs_duration
     
     # Filter out hit songs from the pool of available songs

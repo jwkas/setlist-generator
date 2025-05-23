@@ -18,7 +18,7 @@ class Song(db.Model):
     # Song parameters
     tempo = db.Column(db.Integer)  # Actual BPM
     tempo_category = db.Column(db.String(20))  # slow, medium, fast
-    intensity = db.Column(db.String(20))  # slow, medium, fast
+    intensity = db.Column(db.String(20))  # low, medium, high
     lead_vocalist = db.Column(db.String(50))
     key = db.Column(db.String(20))  # e.g., A Minor, B Major
     is_minor = db.Column(db.Boolean, default=False)  # True if minor, False if major
