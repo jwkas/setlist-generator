@@ -181,6 +181,7 @@ def generate_setlist():
     
     # First, include all hit songs
     hit_songs = [song for song in all_songs if song.is_hit]
+    random.shuffle(hit_songs)
     
     # Calculate remaining duration after including hit songs
     hit_songs_duration = sum(song.duration or 0 for song in hit_songs)
@@ -322,12 +323,14 @@ def generate_setlist():
             
             scored_songs.append((song, score))
         
-        # Sort by score (highest first) and then randomly among ties
-        random.shuffle(scored_songs)  # Randomize first to break ties randomly
-        scored_songs.sort(key=lambda x: x[1], reverse=True)
-        
-        # Return the highest scoring song
-        return scored_songs[0][0] if scored_songs else None
+        if not scored_songs:
+            return None
+
+        # Introduce randomness while favoring higher scores
+        songs, scores = zip(*scored_songs)
+        # Use score + 1 to ensure non-zero weight for all songs
+        weights = [s + 1 for s in scores]
+        return random.choices(songs, weights=weights, k=1)[0]
     
     # Build the setlist by adding songs that balance it
     while remaining_duration > 0 and available_songs:
